@@ -1,4 +1,7 @@
 ---
+hostname: your-instance-fqdn
+influxdb_https_enabled: "false"
+
 # influxdb
 influxdb_users:
   admin:
@@ -22,13 +25,6 @@ influxdb_retention_policy:
     - galaxy
     - notifications
 
-#  regular:
-#    - username: 'admin2'
-#      password: 'admin2'
-#    - username: 'grafana'
-#      password: 'grafana'
-
-
 influxdb_data_dir: /data/monitoring/influxdb_data
 influxdb_setup: "standalone"
 
@@ -49,7 +45,7 @@ influxdb_container_standalone_setup_details:
     {
       'INFLUXDB_HTTP_AUTH_ENABLED': "true",
       'INFLUXDB_HTTP_ENABLED': "true",
-      'INFLUXDB_HTTP_HTTPS_ENABLED': "false",
+      'INFLUXDB_HTTP_HTTPS_ENABLED': "{{ influxdb_https_enabled }}",
       'INFLUXDB_HTTP_HTTPS_CERTIFICATE': "/etc/ssl/certs/fullchain.pem",
       'INFLUXDB_HTTP_HTTPS_PRIVATE_KEY': "/etc/ssl/user/privkey-influxdb.pem",
       'INFLUXDB_HTTP_LOG_ENABLED': "false",
