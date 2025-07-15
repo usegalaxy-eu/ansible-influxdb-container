@@ -58,10 +58,5 @@
     command: |
       influx -username "{{ influxdb_users.admin[0].username }}" -password "{{ influxdb_users.admin[0].password }}"
       -execute "GRANT ALL ON {{ item }} TO {{ influxdb_users.regular[0].username }}"
-  loop:
-    - '_internal'
-    - galaxy
-    - galaxy_stats
-    - grt
-    - notifications
+  loop: "{{ ['_internal'] + (influxdb_databases | default([])) }}"
   when: not ansible_check_mode
