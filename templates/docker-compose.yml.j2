@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: {{ influxdb_container.image }}
+    container_name: {{ influxdb_container.name }}
+    hostname: {{ influxdb_container.hostname }}
+    restart: always
+    ports:
+{% for port in influxdb_container_ports %}
+      - "{{ port }}"
+{% endfor %}
+    volumes:
+{% for volume in influxdb_container_volumes %}
+      - {{ volume }}
+{% endfor %}
+{% if influxdb_https_enabled == "true" %}
+      - /etc/ssl/certs/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/ssl/user/privkey-influxdb.pem:/etc/ssl/user/privkey-influxdb.pem:ro
+{% endif %}
+    environment:
+{% for key, value in influxdb_container_env.items() %}
+      {{ key }}: "{{ value }}"
+{% endfor %}
+    networks:
+      - influxdb_network
+
+networks:
+  influxdb_network:
+    driver: bridge
