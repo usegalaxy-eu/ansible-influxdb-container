@@ -1,6 +1,6 @@
 usegalaxy_eu.influxdbserver
 =======
-Ansible role to deploy and configure an InfluxDB server using a docker container.
+Ansible role to deploy and configure an InfluxDB server using docker compose.
 
 The role has been tested on CentOS, Rocky, Debian and Ubuntu OS.
 
