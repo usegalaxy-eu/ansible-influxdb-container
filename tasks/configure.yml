@@ -3,7 +3,8 @@
   community.docker.docker_container_exec:
     container: "{{ influxdb_container.name }}"
     command: >
-      influx -execute 'show users'
+      influx
+      -execute "show users"
   ignore_errors: true
   register: should_create_admin
   when: not ansible_check_mode
@@ -12,7 +13,8 @@
   community.docker.docker_container_exec:
     container: "{{ influxdb_container.name }}"
     command: >
-      influx -execute 'CREATE USER "{{ item.username }}" WITH PASSWORD "{{ item.password }}" WITH ALL PRIVILEGES'
+      influx
+      -execute "CREATE USER "{{ item.username }}" WITH PASSWORD '"{{ item.password }}"' WITH ALL PRIVILEGES"
   loop: "{{ influxdb_users.admin }}"
   when: 'not ansible_check_mode and "unable to parse authentication credentials" not in should_create_admin.stdout'
 
@@ -21,7 +23,7 @@
     container: "{{ influxdb_container.name }}"
     command: >
       influx -username "{{ influxdb_users.admin[0].username }}" -password "{{ influxdb_users.admin[0].password }}"
-      -execute 'CREATE USER "{{ item.username }}" WITH PASSWORD "{{ item.password }}"'
+      -execute "CREATE USER "{{ item.username }}" WITH PASSWORD '"{{ item.password }}"'"
   loop: "{{ influxdb_users.regular }}"
   when: not ansible_check_mode
 
@@ -30,7 +32,7 @@
     container: "{{ influxdb_container.name }}"
     command: >
       influx -username "{{ influxdb_users.admin[0].username }}" -password "{{ influxdb_users.admin[0].password }}"
-      -execute 'CREATE DATABASE {{ item | quote }}'
+      -execute 'CREATE DATABASE "{{ item }}"'
   loop: "{{ influxdb_databases }}"
   when: not ansible_check_mode
 
@@ -39,7 +41,7 @@
     container: "{{ influxdb_container.name }}"
     command: >
       influx -username "{{ influxdb_users.admin[0].username }}" -password "{{ influxdb_users.admin[0].password }}"
-      -execute 'CREATE RETENTION POLICY oneweek ON {{ item | quote }} DURATION {{ influxdb_retention_policy.duration }} REPLICATION {{ influxdb_retention_policy.replication }} {{ influxdb_retention_policy.default }}'
+      -execute 'CREATE RETENTION POLICY oneweek ON "{{ item }}" DURATION {{ influxdb_retention_policy.duration }} REPLICATION {{ influxdb_retention_policy.replication }} {{ influxdb_retention_policy.default }}'
   loop: "{{ influxdb_retention_policy.databases }}"
   when: not ansible_check_mode
 
@@ -48,7 +50,7 @@
     container: "{{ influxdb_container.name }}"
     command: >
       influx -username "{{ influxdb_users.admin[0].username }}" -password "{{ influxdb_users.admin[0].password }}"
-      -execute 'GRANT ALL ON {{ item | quote }} TO "{{ influxdb_users.regular[1].username }}"'
+      -execute 'GRANT ALL ON "{{ item }}" TO "{{ influxdb_users.regular[1].username }}"'
   loop: "{{ influxdb_databases }}"
   when: not ansible_check_mode
 
@@ -57,7 +59,7 @@
     container: "{{ influxdb_container.name }}"
     command: >
       influx -username "{{ influxdb_users.admin[0].username }}" -password "{{ influxdb_users.admin[0].password }}"
-      -execute 'GRANT ALL ON {{ item | quote }} TO "{{ influxdb_users.regular[0].username }}"'
+      -execute 'GRANT ALL ON "{{ item }}" TO "{{ influxdb_users.regular[0].username }}"'
   loop:
     - _internal
     - galaxy
